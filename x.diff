@@ -1,0 +1,65 @@
+diff --git a/mock_vp.c b/mock_vp.c
+index 559df26..86b40cb 100644
+--- a/mock_vp.c
++++ b/mock_vp.c
+@@ -4,38 +4,46 @@
+ 
+ char items[3][10];
+ 
+-void func_a(){
++void func_a() {
+     char* buff;
+     int i = 0;
+-    do{
++    do {
+         printf("input item:");
++        if (i >= 3) break; // Prevent input beyond available slots
+         buff = &items[i][0];
++        fgets(buff, sizeof(items[i]), stdin);
++        buff[strcspn(buff, "\n")] = 0;  // Remove newline character
+         i++;
+-        fgets(buff, 40, stdin);
+-        buff[strcspn(buff, "\n")] = 0;
+-    }while(strlen(buff)!=0);
++    } while (strlen(buff) != 0 && i < 3); // Ensure i doesn't exceed bounds
+     i--;
+ }
+ 
+-void func_b(){
++void func_b() {
+     char *buff;
+     printf("done adding items\n");
+     int j;
+     printf("display item #:");
+-    scanf("%d", &j);
++    
++    // Read the input and check for valid integer
++    if (scanf("%d", &j) != 1) {
++        printf("Invalid input. Please enter a number.\n");
++        return;
++    }
++    
++    // Validate index
++    if (j < 0 || j >= 3) {
++        printf("Invalid index.\n");
++        return;
++    }
++    
+     buff = &items[j][0];
+     printf("item %d: %s\n", j, buff);
+ }
+ 
+ #ifndef ___TEST___
+-int main()
+-{
+-
++int main() {
+     func_a();
+-
+     func_b();
+-
+-
+     return 0;
+ }
+ #endif
+
